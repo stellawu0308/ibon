@@ -1,0 +1,31 @@
+from hello import get_soup
+resp=get_soup('https://www.ibon.com.tw/retail_inquiry.aspx#gsc.tab=0')
+api_url='https://www.ibon.com.tw/retail_inquiry_ajax.aspx'
+form_data = {'strTargetField': 'COUNTY',
+             'strKeyWords': '基隆市'}
+import requests
+
+resp=requests.post(api_url, form_data)
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(resp.text, 'lxml')
+for i in range(2, 90):
+    tds = trs[i - 1].find_all('td')
+    for td in tds:
+        shops=td.text.strip() 
+        lines = shops.strip().split('\n')
+adresses_list = [lines[i:i+3] for i in range(0, len(lines), 3)]
+data = []
+for address in addresses_list:
+    if len(address) == 3:
+        postal_code, store_name, full_address = address
+        data.append({
+            '郵遞區號': postal_code.strip(),
+            '店名': store_name.strip(),
+            '地址': full_address.strip()
+        })
+    else:
+        print(f"Invalid address format: {address}")
+
+import pandas as pd
+df = pd.DataFrame(data)
+print(df)
