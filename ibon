@@ -14,18 +14,11 @@ for i in range(2, 90):
         shops=td.text.strip() 
         lines = shops.strip().split('\n')
 adresses_list = [lines[i:i+3] for i in range(0, len(lines), 3)]
-data = []
-for address in addresses_list:
-    if len(address) == 3:
-        postal_code, store_name, full_address = address
-        data.append({
-            '郵遞區號': postal_code.strip(),
-            '店名': store_name.strip(),
-            '地址': full_address.strip()
-        })
-    else:
-        print(f"Invalid address format: {address}")
-
+datas=[]
+for tr in soup.find('table').find_all('tr'):
+    data=[]
+    for td in tr.find_all('tr'):
+        data.append(td.text.strip())
+    datas.append(data)
 import pandas as pd
-df = pd.DataFrame(data)
-print(df)
+pd.DataFrame(datas[1:],columns=datas[0])
